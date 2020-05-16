@@ -94,4 +94,4 @@ class Board(val board: List<Int> = listOf(0,0,0,0,0,0,0,0,0),
         )
     }
 
-}
+} 
