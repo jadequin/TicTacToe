@@ -20,7 +20,7 @@ class Board(val board: List<Int> = listOf(0,0,0,0,0,0,0,0,0),
     private fun listPossibleMoves() = board.mapIndexed { index, i -> if(i == 0) index else null }.filterNotNull().shuffled()
 
     fun makeMove(pos: Int): Board {
-        assert(pos >= 0 && pos < board.size && board.elementAt(pos) == 0)
+        //assert(pos >= 0 && pos < board.size && board.elementAt(pos) == 0) //with assert -> wrong syntax highlighting on github
         return Board(
                 board = board.mapIndexed { index, i -> if(index == pos) turn else i},
                 turn = -turn
