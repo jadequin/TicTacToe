@@ -47,7 +47,7 @@ class Board(val board: List<Int> = listOf(0,0,0,0,0,0,0,0,0),
         if(moveResults.isNotEmpty()) //just pick the first move (already shuffled in listPossibleMoves)
             return makeMove(moveResults[0].first)
         else //means there is no winning option anymore, so just pick a random move
-            return makeRandomMove()
+            return makeMove(listPossibleMoves().random())
     }
 
     //TODO: alpha-beta-pruning
@@ -64,8 +64,6 @@ class Board(val board: List<Int> = listOf(0,0,0,0,0,0,0,0,0),
         return bestEval
     }
 
-    fun makeRandomMove() = makeMove(listPossibleMoves().random())
-
     //Returns a list with the winning row if there is one otherwise null
     fun threeInARow(): List<Int>? {
         val rows = listOf(listOf(0,1,2), listOf(3,4,5), listOf(6,7,8), listOf(0,3,6), listOf(1,4,7), listOf(2,5,8), listOf(0,4,8), listOf(2,4,6))
@@ -81,6 +79,10 @@ class Board(val board: List<Int> = listOf(0,0,0,0,0,0,0,0,0),
     //Returns 1 if playerX won, -1 if playerY won and 0 if it's a tie
     //if the method is called before game end it will also return 0
     fun result(): Int = if(threeInARow().isNullOrEmpty()) 0 else -turn
+
+
+
+
 
     override fun toString(): String {
         var cnt = 1
