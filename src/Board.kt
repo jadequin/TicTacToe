@@ -12,8 +12,7 @@ import kotlin.math.min
  */
 
 class Board(val board: List<Int> = listOf(0,0,0,0,0,0,0,0,0),
-            val turn: Int = +1,
-            val moves: List<Int> = listOf()
+            val turn: Int = +1
 ) {
 
     //Returns a list with all possible moves as indices of the board.
@@ -24,8 +23,7 @@ class Board(val board: List<Int> = listOf(0,0,0,0,0,0,0,0,0),
         assert(pos >= 0 && pos < board.size && board.elementAt(pos) == 0)
         return Board(
                 board = board.mapIndexed { index, i -> if(index == pos) turn else i},
-                turn = -turn,
-                moves = moves.plus(pos)
+                turn = -turn
         )
     }
 
