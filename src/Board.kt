@@ -11,12 +11,7 @@ import kotlin.math.min
     - both turns will be represented by +/-1
  */
 
-class Board(val board: List<Int> = listOf(0,0,0,0,0,0,0,0,0),
-            val turn: Int = +1
-) {
-
-    //Returns: List with all possible moves as indices of the board.
-    //The moves will also be shuffled for a higher random factor in further usages
+class Board(val board: List<Int> = listOf(0,0,0,0,0,0,0,0,0), val turn: Int = +1) {
 
     fun makeMove(pos: Int) = Board(board = board.mapIndexed { index, i -> if(index == pos) turn else i}, turn = -turn)
 
@@ -25,12 +20,9 @@ class Board(val board: List<Int> = listOf(0,0,0,0,0,0,0,0,0),
     fun makeBestMove(): Board {
         val moveResults = mutableListOf<Pair<Board, Int>>()
 
-        for(move in possibleMoves()) {
-            if(move.result() == turn)
-                return move
-
-            val result = minimax(move)
-            moveResults.add(Pair(move, result))
+        possibleMoves().forEach {
+            if(it.result() == turn) return it
+            else moveResults.add(Pair(it, minimax(it)))
         }
 
         //filter only the 'good' results
@@ -42,7 +34,6 @@ class Board(val board: List<Int> = listOf(0,0,0,0,0,0,0,0,0),
             makeRandomMove()
             //no winning option anymore, pick a random move
     }
-
 
     fun isGameOver() = !threeInARow().isNullOrEmpty() || possibleMoves().isEmpty()
     fun playerXTurn() = turn == 1 //method for game representation
@@ -69,10 +60,7 @@ class Board(val board: List<Int> = listOf(0,0,0,0,0,0,0,0,0),
             return result()
 
         var bestEval = if(board.turn == 1) Int.MIN_VALUE else Int.MAX_VALUE
-        for(move in board.possibleMoves()) {
-            val eval = minimax(move)
-            bestEval = if(board.turn == 1) max(eval, bestEval) else min(eval, bestEval)
-        }
+        board.possibleMoves().forEach { bestEval = if(board.turn == 1) max(minimax(it), bestEval) else min(minimax(it), bestEval) }
         return bestEval
     }
 
