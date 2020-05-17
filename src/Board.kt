@@ -17,18 +17,19 @@ class Board(val board: List<Int> = listOf(0,0,0,0,0,0,0,0,0),
 
     //Returns: List with all possible moves as indices of the board.
     //The moves will also be shuffled for a higher random factor in further usages
-    private fun listPossibleMoves() = board.mapIndexed { index, i -> if(i == 0) index else null }.filterNotNull().shuffled()
 
     fun makeMove(pos: Int) = Board(board = board.mapIndexed { index, i -> if(index == pos) turn else i}, turn = -turn)
 
+    fun makeRandomMove() = possibleMoves().random()
+
     fun makeBestMove(): Board {
-        val moveResults = mutableListOf<Pair<Int, Int>>()
+        val moveResults = mutableListOf<Pair<Board, Int>>()
 
-        for(move in listPossibleMoves()) {
-            if(makeMove(move).result() == turn)
-                return makeMove(move)
+        for(move in possibleMoves()) {
+            if(move.result() == turn)
+                return move
 
-            val result = minimax(makeMove(move))
+            val result = minimax(move)
             moveResults.add(Pair(move, result))
         }
 
@@ -36,11 +37,20 @@ class Board(val board: List<Int> = listOf(0,0,0,0,0,0,0,0,0),
         moveResults.filter { it.second == turn }
 
         return if(moveResults.isNotEmpty())
-            makeMove(moveResults[0].first)
+            moveResults[0].first
         else
-            makeMove(listPossibleMoves().random())
+            makeRandomMove()
             //no winning option anymore, pick a random move
     }
+
+
+    fun isGameOver() = !threeInARow().isNullOrEmpty() || possibleMoves().isEmpty()
+    fun playerXTurn() = turn == 1 //method for game representation
+
+    //Returns 1 if playerX won, -1 if playerY won and 0 if it's a tie or the game is not over
+    fun result(): Int = if(threeInARow().isNullOrEmpty()) 0 else -turn
+
+    private fun possibleMoves() = board.mapIndexed { index, i -> if(i == 0) makeMove(index) else null }.filterNotNull().shuffled()
 
     //Returns: List with the winning row if there is one otherwise null
     private fun threeInARow(): List<Int>? {
@@ -52,13 +62,6 @@ class Board(val board: List<Int> = listOf(0,0,0,0,0,0,0,0,0),
         return null
     }
 
-    fun isGameOver() = !threeInARow().isNullOrEmpty() || listPossibleMoves().isEmpty()
-    fun playerXTurn() = turn == 1 //method for game representation
-
-    //Returns 1 if playerX won, -1 if playerY won and 0 if it's a tie or the game is not over
-    fun result(): Int = if(threeInARow().isNullOrEmpty()) 0 else -turn
-
-
     //TODO: alpha-beta-pruning
     private fun minimax(board: Board): Int {
 
@@ -66,8 +69,8 @@ class Board(val board: List<Int> = listOf(0,0,0,0,0,0,0,0,0),
             return result()
 
         var bestEval = if(board.turn == 1) Int.MIN_VALUE else Int.MAX_VALUE
-        for(move in board.listPossibleMoves()) {
-            val eval = minimax(board.makeMove(move))
+        for(move in board.possibleMoves()) {
+            val eval = minimax(move)
             bestEval = if(board.turn == 1) max(eval, bestEval) else min(eval, bestEval)
         }
         return bestEval
