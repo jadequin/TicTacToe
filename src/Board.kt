@@ -1,10 +1,5 @@
-import kotlin.math.absoluteValue
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.sign
-import kotlin.random.Random
-import kotlin.random.nextInt
-
+import kotlin.math.*
+import kotlin.random.*
 /*
     - Board will be displayed as an 1D array
     - possible position states:
@@ -26,7 +21,6 @@ class Board(val board: List<Int> = listOf(0,0,0,0,0,0,0,0,0), val turn: Int = +1
     }
 
     fun isGameOver() = !threeInARow().isNullOrEmpty() || possibleMoves().isEmpty()
-    fun playerXTurn() = turn == 1 //method for game representation
 
     //Returns 1 if playerX won, -1 if playerY won and 0 if it's a tie or the game is not over
     fun result(): Int = if(threeInARow().isNullOrEmpty()) 0 else -turn
@@ -36,16 +30,12 @@ class Board(val board: List<Int> = listOf(0,0,0,0,0,0,0,0,0), val turn: Int = +1
     //Returns: List with the winning row if there is one otherwise null
     private fun threeInARow(): List<Int>? {
         val rows = listOf(listOf(0,1,2), listOf(3,4,5), listOf(6,7,8), listOf(0,3,6), listOf(1,4,7), listOf(2,5,8), listOf(0,4,8), listOf(2,4,6))
-        rows.forEach {
-            if(it.sumBy { i -> board.elementAt(i)}.absoluteValue == 3)
-                return it
-        }
+        rows.forEach { if(it.sumBy { i -> board.elementAt(i)}.absoluteValue == 3) return it }
         return null
     }
 
     //TODO: alpha-beta-pruning
     private fun minimax(board: Board): Pair<Board, Int> {
-
         if(board.isGameOver())
             return Pair(board, result() * (1000- Random.nextInt(1..1000)))
 
