@@ -1,6 +1,9 @@
 import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.sign
+import kotlin.random.Random
+import kotlin.random.nextInt
 
 /*
     - Board will be displayed as an 1D array
@@ -15,24 +18,11 @@ class Board(val board: List<Int> = listOf(0,0,0,0,0,0,0,0,0), val turn: Int = +1
 
     fun makeMove(pos: Int) = Board(board = board.mapIndexed { index, i -> if(index == pos) turn else i}, turn = -turn)
 
-    fun makeRandomMove() = possibleMoves().random()
+    fun randomMove() = possibleMoves().random()
 
-    fun makeBestMove(): Board {
-        val moveResults = mutableListOf<Pair<Board, Int>>()
-
-        possibleMoves().forEach {
-            if(it.result() == turn) return it
-            else moveResults.add(Pair(it, minimax(it)))
-        }
-
-        //filter only the 'good' results
-        moveResults.filter { it.second == turn }
-
-        return if(moveResults.isNotEmpty())
-            moveResults[0].first
-        else
-            makeRandomMove()
-            //no winning option anymore, pick a random move
+    fun bestMove(): Board {
+        val bestOption = minimax(this)
+        return if(bestOption.second.sign == turn) bestOption.first else randomMove()
     }
 
     fun isGameOver() = !threeInARow().isNullOrEmpty() || possibleMoves().isEmpty()
@@ -54,14 +44,14 @@ class Board(val board: List<Int> = listOf(0,0,0,0,0,0,0,0,0), val turn: Int = +1
     }
 
     //TODO: alpha-beta-pruning
-    private fun minimax(board: Board): Int {
+    private fun minimax(board: Board): Pair<Board, Int> {
 
         if(board.isGameOver())
-            return result()
+            return Pair(board, result() * (1000- Random.nextInt(1..1000)))
 
         var bestEval = if(board.turn == 1) Int.MIN_VALUE else Int.MAX_VALUE
-        board.possibleMoves().forEach { bestEval = if(board.turn == 1) max(minimax(it), bestEval) else min(minimax(it), bestEval) }
-        return bestEval
+        board.possibleMoves().forEach { bestEval = if(board.turn == 1) max(minimax(it).second, bestEval) else min(minimax(it).second, bestEval) }
+        return Pair(board, bestEval)
     }
 
     override fun toString(): String {
