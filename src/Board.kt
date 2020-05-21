@@ -1,12 +1,7 @@
 import kotlin.math.*
-
 /*
-    - Board will be displayed as an 1D array
-    - possible position states:
-         0 = empty  ' '
-        -1 = Player 'O'
-         1 = Player 'X'
-    - both turns will be represented by +/-1
+         Board is a 1D-Array with switching turns (+1 for Player X' Turn, -1 for Player O's Turn)
+         0 = empty  ' '         -1 = Player 'O'             1 = Player 'X'
  */
 
 class Board(private val fields: List<Int> = listOf(0,0,0,0,0,0,0,0,0), private val turn: Int = +1) {
@@ -20,7 +15,7 @@ class Board(private val fields: List<Int> = listOf(0,0,0,0,0,0,0,0,0), private v
     //Returns 1 if playerX won, -1 if playerY won and 0 if it's a tie or the game is not over
     private fun result(): Int = if(threeInARow().isNullOrEmpty()) 0 else -turn
 
-    private fun possibleMoves(): List<Board> = fields.mapIndexed { index, i -> if(i == 0) makeMove(index) else null }.filterNotNull().shuffled()
+    private fun possibleMoves(): List<Board> = fields.mapIndexed { index, i -> if(i == 0) makeMove(index) else null }.filterNotNull()
 
     private fun winningMove(): Board? = possibleMoves().filter { it.result() == turn }.randomOrNull()
 
