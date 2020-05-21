@@ -5,20 +5,22 @@
 import java.util.*
 import kotlin.concurrent.schedule
 
-
-fun main() {
-    var board = Board() //new clean board
+fun example() {
+    var board = Board(listOf(0,0,0,0,0,0,0,0,0)) //new clean board
     val reader = Scanner(System.`in`)
 
     while(!board.isGameOver()) {
         println(board)
-        print("Your Turn - Enter a valid number: ")
+        print("Your Turn - Enter a valid number (1-9): ")
         val input:Int = reader.nextInt()
-        board = board.makeMove(input)
+        board = board.makeMove(input - 1)
         println(board)
 
-        Timer().schedule(2000){}
         board = board.bestMove()
     }
+    println(board)
+}
 
+fun main() {
+    example()
 }

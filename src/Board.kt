@@ -1,5 +1,5 @@
 import kotlin.math.*
-import kotlin.random.*
+
 /*
     - Board will be displayed as an 1D array
     - possible position states:
@@ -9,44 +9,46 @@ import kotlin.random.*
     - both turns will be represented by +/-1
  */
 
-class Board(val board: List<Int> = listOf(0,0,0,0,0,0,0,0,0), val turn: Int = +1) {
+class Board(private val fields: List<Int> = listOf(0,0,0,0,0,0,0,0,0), private val turn: Int = +1) {
 
-    fun makeMove(pos: Int) = Board(board = board.mapIndexed { index, i -> if(index == pos) turn else i}, turn = -turn)
+    fun makeMove(pos: Int) = Board(fields = fields.mapIndexed { index, i -> if(index == pos) turn else i}, turn = -turn)
 
-    fun randomMove() = possibleMoves().random()
-
-    fun bestMove(): Board {
-        val bestOption = minimax(this)
-        return if(bestOption.second.sign == turn) bestOption.first else randomMove()
-    }
+    fun bestMove(): Board = minimax(this).first
 
     fun isGameOver() = !threeInARow().isNullOrEmpty() || possibleMoves().isEmpty()
 
     //Returns 1 if playerX won, -1 if playerY won and 0 if it's a tie or the game is not over
-    fun result(): Int = if(threeInARow().isNullOrEmpty()) 0 else -turn
+    private fun result(): Int = if(threeInARow().isNullOrEmpty()) 0 else -turn
 
-    private fun possibleMoves() = board.mapIndexed { index, i -> if(i == 0) makeMove(index) else null }.filterNotNull().shuffled()
+    private fun possibleMoves(): List<Board> = fields.mapIndexed { index, i -> if(i == 0) makeMove(index) else null }.filterNotNull().shuffled()
+
+    private fun winningMove(): Board? = possibleMoves().filter { it.result() == turn }.randomOrNull()
 
     //Returns: List with the winning row if there is one otherwise null
     private fun threeInARow(): List<Int>? {
         val rows = listOf(listOf(0,1,2), listOf(3,4,5), listOf(6,7,8), listOf(0,3,6), listOf(1,4,7), listOf(2,5,8), listOf(0,4,8), listOf(2,4,6))
-        rows.forEach { if(it.sumBy { i -> board.elementAt(i)}.absoluteValue == 3) return it }
+        rows.forEach { if(it.sumBy { i -> fields.elementAt(i)}.absoluteValue == 3) return it }
         return null
     }
 
     //TODO: alpha-beta-pruning
-    private fun minimax(board: Board): Pair<Board, Int> {
-        if(board.isGameOver())
-            return Pair(board, result() * (1000- Random.nextInt(1..1000)))
+    private fun minimax(board: Board, depth: Int = 10): Pair<Board, Int> {
+        val winner = board.winningMove()
+        if(winner != null)
+            return Pair(winner, winner.result() * depth)
 
-        var bestEval = if(board.turn == 1) Int.MIN_VALUE else Int.MAX_VALUE
-        board.possibleMoves().forEach { bestEval = if(board.turn == 1) max(minimax(it).second, bestEval) else min(minimax(it).second, bestEval) }
-        return Pair(board, bestEval)
+        var bestOption = Pair(board, Int.MAX_VALUE * -board.turn) //+++++++++++   MINUS OR PLUS???
+        board.possibleMoves().forEach {
+            val option = minimax(it, depth - 1)
+            if(turn == 1 && option.second > bestOption.second) bestOption = option
+            else if(option.second < bestOption.second) bestOption = option
+        }
+        return bestOption
     }
 
     override fun toString(): String {
         var cnt = 1
-        return board.joinToString(prefix = "-------\n|", postfix = "-------", separator = "|",
+        return fields.joinToString(prefix = "-------\n|", postfix = "-------", separator = "|",
                 transform = {
                     (if(it == -1) "O" else if(it == 1) "X" else " ") +
                             (if(cnt++ % 3 == 0) "|\n" else "")
