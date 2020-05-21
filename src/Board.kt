@@ -26,14 +26,14 @@ class Board(private val fields: List<Int> = listOf(0,0,0,0,0,0,0,0,0), private v
         return null
     }
 
-    private fun minimax(board: Board, depth: Int = 10): Pair<Board, Int> {
+    private fun minimax(board: Board): Pair<Board, Int> {
         val winner = board.winningMove()
         if(winner != null)
-            return Pair(winner, winner.result() * depth)
+            return Pair(winner, winner.result())
 
         var bestOption = Pair(board, Int.MAX_VALUE * -board.turn)
         board.possibleMoves().forEach {
-            val option = minimax(it, depth - 1)
+            val option = minimax(it)
             if(turn == 1 && option.second > bestOption.second) bestOption = option
             else if(option.second < bestOption.second) bestOption = option
         }
