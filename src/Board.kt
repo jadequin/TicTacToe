@@ -31,13 +31,12 @@ class Board(private val fields: List<Int> = listOf(0,0,0,0,0,0,0,0,0), private v
         return null
     }
 
-    //TODO: alpha-beta-pruning
     private fun minimax(board: Board, depth: Int = 10): Pair<Board, Int> {
         val winner = board.winningMove()
         if(winner != null)
             return Pair(winner, winner.result() * depth)
 
-        var bestOption = Pair(board, Int.MAX_VALUE * -board.turn) //+++++++++++   MINUS OR PLUS???
+        var bestOption = Pair(board, Int.MAX_VALUE * -board.turn)
         board.possibleMoves().forEach {
             val option = minimax(it, depth - 1)
             if(turn == 1 && option.second > bestOption.second) bestOption = option
@@ -48,11 +47,7 @@ class Board(private val fields: List<Int> = listOf(0,0,0,0,0,0,0,0,0), private v
 
     override fun toString(): String {
         var cnt = 1
-        return fields.joinToString(prefix = "-------\n|", postfix = "-------", separator = "|",
-                transform = {
-                    (if(it == -1) "O" else if(it == 1) "X" else " ") +
-                            (if(cnt++ % 3 == 0) "|\n" else "")
-                }//new line with every 3rd position
-        )
+        return fields.joinToString(separator = "|", prefix = "-------\n|", postfix = "-------",
+                transform = { (if(it == -1) "O" else if(it == 1) "X" else " ") + (if(cnt++ % 3 == 0) "|\n" else "") })
     }
 }
