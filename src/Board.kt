@@ -26,8 +26,7 @@ class Board(private val fields: List<Int> = listOf(0,0,0,0,0,0,0,0,0), private v
         return null
     }
 
-    //TODO: alpha-beta-pruning
-    private fun minimax(board: Board, alpha: Int = Int.MIN_VALUE, beta: Int = Int.MAX_VALUE): Pair<Board, Int> {
+    private fun minimax(board: Board): Pair<Board, Int> {
         val winner = board.winningMove()
         if(winner != null)
             return Pair(winner, winner.result())
