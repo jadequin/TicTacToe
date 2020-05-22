@@ -4,9 +4,11 @@ import kotlin.math.*
          0 = empty  ' '         -1 = Player 'O'             1 = Player 'X'
  */
 
-class Board(private val fields: List<Int> = listOf(0,0,0,0,0,0,0,0,0), private val turn: Int = +1) {
+class Board(private val fields: List<Int> = listOf(0,0,0,0,0,0,0,0,0), private val turn: Int = +1, private val history: List<Board> = listOf()) {
 
-    fun makeMove(pos: Int) = Board(fields.mapIndexed { index, i -> if(index == pos) turn else i}, -turn)
+    fun makeMove(pos: Int) = Board(fields.take(pos) + listOf(turn) + fields.takeLast(fields.size - pos - 1), -turn, history.plus(this))
+
+    fun undoMove() = history.last()
 
     fun bestMove(): Board = minimax(this).first
 
@@ -34,8 +36,8 @@ class Board(private val fields: List<Int> = listOf(0,0,0,0,0,0,0,0,0), private v
         var bestOption = Pair(board, Int.MAX_VALUE * -board.turn)
         board.possibleMoves().forEach {
             val option = minimax(it)
-            if(turn == 1 && option.second > bestOption.second) bestOption = option
-            else if(option.second < bestOption.second) bestOption = option
+            if(option.second * turn > bestOption.second * turn)
+                bestOption = option
         }
         return bestOption
     }
