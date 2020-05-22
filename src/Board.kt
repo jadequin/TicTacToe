@@ -6,7 +6,7 @@ import kotlin.math.*
 
 class Board(private val fields: List<Int> = listOf(0,0,0,0,0,0,0,0,0), private val turn: Int = +1) {
 
-    fun makeMove(pos: Int) = Board(fields = fields.mapIndexed { index, i -> if(index == pos) turn else i}, turn = -turn)
+    fun makeMove(pos: Int) = Board(fields.mapIndexed { index, i -> if(index == pos) turn else i}, -turn)
 
     fun bestMove(): Board = minimax(this).first
 
@@ -26,7 +26,8 @@ class Board(private val fields: List<Int> = listOf(0,0,0,0,0,0,0,0,0), private v
         return null
     }
 
-    private fun minimax(board: Board): Pair<Board, Int> {
+    //TODO: alpha-beta-pruning
+    private fun minimax(board: Board, alpha: Int = Int.MIN_VALUE, beta: Int = Int.MAX_VALUE): Pair<Board, Int> {
         val winner = board.winningMove()
         if(winner != null)
             return Pair(winner, winner.result())
