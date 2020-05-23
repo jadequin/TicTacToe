@@ -4,7 +4,6 @@
  */
 import java.lang.NumberFormatException
 import java.util.*
-import kotlin.math.pow
 
 fun playGame() {
     val reader = Scanner(System.`in`)

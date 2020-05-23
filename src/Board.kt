@@ -9,9 +9,7 @@ class Board(private val fields: List<Int> = listOf(0,0,0,0,0,0,0,0,0), private v
 
     companion object {
         private val hashBoard = hashMapOf<Board, Int>()
-        init {
-            Board().fillMapWithNegaMax()
-        }
+        init { Board().fillMapWithNegaMax() }
     }
 
     fun makeMove(pos: Int) = Board(fields.take(pos) + listOf(turn) + fields.takeLast(fields.size - pos - 1), -turn, history.plus(this))
@@ -48,6 +46,9 @@ class Board(private val fields: List<Int> = listOf(0,0,0,0,0,0,0,0,0), private v
     }
 
     private fun fillMapWithNegaMax(): Int {
+        if(hashBoard[this] != null)
+            return hashBoard[this]!!
+
         if(isGameOver()) {
             hashBoard[this] = result() * -turn
             return result() * -turn
